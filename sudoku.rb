@@ -7,7 +7,7 @@ class Sudoku
   ##
   # Place +num+ at +x+, +y+ in the sodoku puzzle
   def place!(x, y, num)
-    puzzle[x][y] = num
+    @puzzle[y][x] = num
   end
 
   ##
@@ -21,14 +21,8 @@ class Sudoku
     arr.each {|num| return false unless arr.count(num) == 1}
   end
 
-  def check_row(x,y)
-    #row = puzzle[y]
-    #row.each do |num, index|
-      #p num
-      #p index
-      #false if num == row[x] and index != x
-    #end
-    #true
+  def check_row(y,num)
+    @puzzle[y].count(num) == 0
   end
 
   def check_col(x,y)
@@ -72,6 +66,9 @@ fail if test_map.valid?
 end
 
 test_map = Sudoku.new(test)
+test_map.place!(0,0,0)
+fail unless test_map.puzzle[0][0] == 0
+fail unless test_map.check_row(0,1)
 fail unless test_map.valid?
 #test_map.place! 0,0,3
 #p test_map.puzzle
