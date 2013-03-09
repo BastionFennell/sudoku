@@ -13,12 +13,13 @@ class Sudoku
   ##
   # Checks if the number at +col+, +row+ is legal
   def check_pos(col,row,num)
-    check_row row,num and check_col col,num
+    mat_num = row / 3 + col / 3
+    check_row row, num and check_col col, num and check_mat mat_num, num
   end
 
   def self.check_row arr
     return false unless arr.size == 9
-    arr.each {|num| return false unless arr.count(num) == 1 and (0..9) === num}
+    arr.each {|num| return false unless arr.count(num) == 1 and (1..9) === num}
   end
 
   def check_row(row,num)
@@ -59,12 +60,27 @@ class Sudoku
       col = 3 * (mat % 3) + index % 3
       mat_arr << @puzzle[row][col] 
     end
-   mat_arr.count(num) == 0
+    mat_arr.count(num) == 0
   end 
 
   ##
   # Checks the whole puzzle to see if it's a solution
   def check_puzzle
+    9.times do |index|
+      return false unless Sudoku.check_row @puzzle[index] 
+     
+      mat_arr = []
+      9.times do |mat_ind|
+        row = 3 * (index / 3) + mat_ind / 3
+        col = 3 * (index % 3) + mat_ind % 3
+        mat_arr << @puzzle[row][col] 
+      end
+      
+      return false unless Sudoku.check_row mat_arr
+      return false unless Sudoku.check_col @puzzle, index
+    end
+    p @puzzle
+    true
   end
 
   def valid?
@@ -124,5 +140,12 @@ fail if Sudoku.check_mat [[1,1,3],[4,5,6],[7,8,9]]
 fail unless Sudoku.check_mat [[1,2,3],[4,5,6],[7,8,9]]
 
 fail if test_map.check_mat 0,1
+
+test_map.place! 0,0,0
+
+fail unless test_map.check_pos 0,0,4
+
+fail if test_map.check_puzzle
+
 
 puts "\e[32m Great job!\e[0m"
